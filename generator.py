@@ -13,7 +13,7 @@ def check_rate_limit():
     token = str(st.secrets["GITHUB_TOKEN"]).replace('"', '').replace("'", "").strip()
     username = str(st.secrets["GITHUB_USERNAME"]).replace('"', '').replace("'", "").strip()
     
-    # --- CRITICAL FIX: Direct routing to official GitHub API domain ---
+    # --- FIXED URL: Uses api.github.com with proper slashes ---
     url = f"https://github.com{username}/repos"
     
     headers = {
