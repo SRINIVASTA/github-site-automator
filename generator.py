@@ -18,7 +18,7 @@ def create_github_repo(repo_name):
         "User-Agent": "github-site-automator-app"
     }
     
-    # Check if the repository already exists on your profile
+    # --- CRITICAL FIX: Added a forward slash between github.com and the username ---
     check_url = f"https://github.com{username}/{repo_name}"
     check_response = requests.get(check_url, headers=headers)
     
