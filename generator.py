@@ -31,8 +31,11 @@ def create_github_repo(repo_name):
     
     response = requests.post(create_url, json=data, headers=headers)
     
-    # 201 = Created, 422 = Already Exists
-    if response.status_code in:
+    # 201 means Created successfully
+    if response.status_code == 201:
+        return True
+    # 422 means Already Exists
+    elif response.status_code == 422:
         return True
         
     raise Exception(f"GitHub API Rejected Request. Code: {response.status_code} | Reason: {response.reason}")
@@ -64,7 +67,9 @@ def upload_index_html(repo_name, html_content):
         data["sha"] = sha
         
     response = requests.put(url, json=data, headers=headers)
-    if response.status_code in:
+    
+    # 200 means Updated, 201 means Created Successfully
+    if response.status_code == 200 or response.status_code == 201:
         return True
         
     raise Exception(f"File injection failed. Code: {response.status_code} | Reason: {response.reason}")
@@ -86,8 +91,8 @@ def enable_github_pages(repo_name):
     
     for _ in range(3):
         response = requests.post(url, json=data, headers=headers)
-        # 201 = Created, 409 = Pages already active on repository
-        if response.status_code in: 
+        # 201 means Created, 409 means Pages already active on repository
+        if response.status_code == 201 or response.status_code == 409: 
             return f"https://{username}.github.io/{repo_name}/"
         time.sleep(4)
         
