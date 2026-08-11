@@ -18,19 +18,23 @@ def create_github_repo(repo_name):
         "User-Agent": "github-site-automator-app"
     }
     
-    # Isolated check endpoint layout
-    check_url = f"https://api.github.com/repos/{username}/{repo_name}"
-    check_response = requests.get(check_url, headers=headers)
-    
-    if check_response.status_code == 200:
-        return True
+    # STEP 1: Safely check if it exists. If it returns 404, we don't crash, we just move on.
+    check_url = f"https://github.com{username}/{repo_name}"
+    try:
+        check_response = requests.get(check_url, headers=headers)
+        if check_response.status_code == 200:
+            print("⚠️ Repository already exists. Moving straight to file upload...")
+            return True
+    except Exception:
+        pass # Ignore any lookup connection dropouts
 
-    # If it does not exist, safely create it via the user repository builder route
+    # STEP 2: Create the repository since it wasn't found
     create_url = "https://github.com"
     data = {"name": repo_name, "auto_init": True, "private": False}
     
     response = requests.post(create_url, json=data, headers=headers)
     
+    # 201 means Created successfully, 422 means Already Exists
     if response.status_code == 201 or response.status_code == 422:
         return True
         
@@ -41,7 +45,7 @@ def upload_index_html(repo_name, html_content):
     token = str(st.secrets["GITHUB_TOKEN"]).replace('"', '').replace("'", "").strip()
     username = str(st.secrets["GITHUB_USERNAME"]).replace('"', '').replace("'", "").strip()
     
-    url = f"https://api.github.com/repos/{username}/{repo_name}/contents/index.html"
+    url = f"https://github.com{username}/{repo_name}/contents/index.html"
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
@@ -56,7 +60,7 @@ def upload_index_html(repo_name, html_content):
         sha = check_response.json()["sha"]
         
     data = {
-        "message": "feat: autonomous dynamic system layout compilation via cloud automation",
+        "message": "制造: autonomous dynamic system layout compilation via cloud automation",
         "content": encoded_content
     }
     if sha:
@@ -74,7 +78,7 @@ def enable_github_pages(repo_name):
     token = str(st.secrets["GITHUB_TOKEN"]).replace('"', '').replace("'", "").strip()
     username = str(st.secrets["GITHUB_USERNAME"]).replace('"', '').replace("'", "").strip()
     
-    url = f"https://api.github.com/repos/{username}/{repo_name}/pages"
+    url = f"https://github.com{username}/{repo_name}/pages"
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
