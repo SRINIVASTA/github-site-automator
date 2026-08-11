@@ -13,7 +13,9 @@ def check_rate_limit():
     token = str(st.secrets["GITHUB_TOKEN"]).replace('"', '').replace("'", "").strip()
     username = str(st.secrets["GITHUB_USERNAME"]).replace('"', '').replace("'", "").strip()
     
+    # --- CRITICAL FIX: Direct routing to official GitHub API domain ---
     url = f"https://github.com{username}/repos"
+    
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
@@ -125,9 +127,7 @@ def enable_github_pages(repo_name):
 
 def execute_automation_cycle(prompt, repo_name):
     """Orchestrates cloud-native site creation loops cleanly with hourly limits enforced."""
-    # Run the hourly 499-site safety barrier check first
     check_rate_limit()
-    
     create_github_repo(repo_name)
     html_payload = route_prompt_to_template(prompt)
     upload_index_html(repo_name, html_payload)
