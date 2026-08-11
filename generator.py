@@ -87,15 +87,23 @@ def enable_github_pages(repo_name):
     return f"https://{username}.github.io/{repo_name}/"
 
 def execute_automation_cycle(prompt, repo_name):
-    """Orchestrates purely cloud-native site creation loops without hard drive requirements."""
+    """Orchestrates cloud-native website generation loops with programmatic traffic pacing."""
     # 1. Spawn repository infrastructure online
     create_github_repo(repo_name)
     
-    # 2. Compile prompt metadata rules using our dynamic component router
+    # 2. Compile layout structures via component factory
     html_payload = route_prompt_to_template(prompt)
     
-    # 3. Direct write content upstream using rapid web APIs
+    # 3. Direct write content upstream using web APIs
     upload_index_html(repo_name, html_payload)
-        
+    
     # 4. Provision deployment servers
-    return enable_github_pages(repo_name)
+    live_url = enable_github_pages(repo_name)
+    
+    # --- PROGRAMMATIC RATE-GUARD PROTECTION ---
+    # A brief 2-second sleep ensures your server acts smoothly, spreads requests, 
+    # and keeps your 499 hourly tracking clear of minute-interval filters.
+    time.sleep(2)
+    # ------------------------------------------
+    
+    return live_url
