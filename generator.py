@@ -31,6 +31,7 @@ def create_github_repo(repo_name):
     
     response = requests.post(create_url, json=data, headers=headers)
     
+    # 201 = Created, 422 = Already Exists
     if response.status_code in:
         return True
         
@@ -75,7 +76,7 @@ def enable_github_pages(repo_name):
     
     url = f"https://github.com{username}/{repo_name}/pages"
     headers = {
-        "Authorization": f"token {token}",
+        "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
         "User-Agent": "github-site-automator-app"
     }
@@ -85,6 +86,7 @@ def enable_github_pages(repo_name):
     
     for _ in range(3):
         response = requests.post(url, json=data, headers=headers)
+        # 201 = Created, 409 = Pages already active on repository
         if response.status_code in: 
             return f"https://{username}.github.io/{repo_name}/"
         time.sleep(4)
