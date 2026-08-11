@@ -20,6 +20,12 @@ def create_github_repo(repo_name):
     url = "https://github.com"
     data = {"name": repo_name, "auto_init": True, "private": False}
     response = requests.post(url, json=data, headers=headers)
+    
+    # --- ADD THIS DEBUGGING LOGIC ---
+    print(f"DEBUG: GitHub API Status Code = {response.status_code}")
+    print(f"DEBUG: GitHub API Response Body = {response.text}")
+    # ---------------------------------
+    
     if response.status_code == 201:
         return response.json()["clone_url"]
     elif response.status_code == 422:
