@@ -1,0 +1,4 @@
+__pycache__/
+generated_sites/
+# Hide your local Streamlit secrets file completely
+.streamlit/secrets.toml
