@@ -8,57 +8,62 @@ import streamlit as st
 from components import route_prompt_to_template
 
 def create_github_repo(repo_name):
-    """Provisions a clean public repository using clean Basic Auth headers."""
-    # Squeeze out hidden quotation mark strings or structural whitespaces
+    """Checks if a repository exists; if not, provisions a fresh public one cleanly."""
     token = str(st.secrets["GITHUB_TOKEN"]).replace('"', '').replace("'", "").strip()
     username = str(st.secrets["GITHUB_USERNAME"]).replace('"', '').replace("'", "").strip()
     
-    url = "https://github.com"
-    
-    # Bypasses Bearer parsing anomalies by passing username and token via Basic Auth
     headers = {
+        "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
         "User-Agent": "github-site-automator-app"
     }
     
+    # Check if the repository already exists on your profile
+    check_url = f"https://github.com{username}/{repo_name}"
+    check_response = requests.get(check_url, headers=headers)
+    
+    if check_response.status_code == 200:
+        return True
+
+    # If it does not exist, safely create it
+    create_url = "https://github.com"
     data = {"name": repo_name, "auto_init": True, "private": False}
     
-    # Pass token safely using the auth parameter tuple matrix
-    response = requests.post(url, json=data, headers=headers, auth=(username, token))
+    response = requests.post(create_url, json=data, headers=headers)
     
-    # 201 = Created, 422 = Repository already exists on your profile account
-    if response.status_code in [201, 422]:
+    if response.status_code in:
         return True
         
-    raise Exception(f"GitHub Repository Creation Failed. Code: {response.status_code} | Reason: {response.reason}")
+    raise Exception(f"GitHub API Rejected Request. Code: {response.status_code} | Reason: {response.reason}")
 
 def upload_index_html(repo_name, html_content):
-    """Writes the website layout directly to the new repository via web strings."""
+    """Writes the website layout directly to the repository using Base64 strings."""
     token = str(st.secrets["GITHUB_TOKEN"]).replace('"', '').replace("'", "").strip()
     username = str(st.secrets["GITHUB_USERNAME"]).replace('"', '').replace("'", "").strip()
     
     url = f"https://github.com{username}/{repo_name}/contents/index.html"
     headers = {
+        "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json",
         "User-Agent": "github-site-automator-app"
     }
     
     encoded_content = base64.b64encode(html_content.encode("utf-8")).decode("utf-8")
     
-    check_response = requests.get(url, headers=headers, auth=(username, token))
+    check_response = requests.get(url, headers=headers)
     sha = None
     if check_response.status_code == 200:
         sha = check_response.json()["sha"]
         
     data = {
-        "message": "制造: autonomous dynamic system layout compilation",
+        "message": "feat: autonomous dynamic system layout compilation via cloud automation",
         "content": encoded_content
     }
     if sha:
         data["sha"] = sha
         
-    response = requests.put(url, json=data, headers=headers, auth=(username, token))
-    if response.status_code in [200, 201]:
+    response = requests.put(url, json=data, headers=headers)
+    if response.status_code in:
         return True
         
     raise Exception(f"File injection failed. Code: {response.status_code} | Reason: {response.reason}")
@@ -70,23 +75,24 @@ def enable_github_pages(repo_name):
     
     url = f"https://github.com{username}/{repo_name}/pages"
     headers = {
+        "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json",
         "User-Agent": "github-site-automator-app"
     }
     data = {"source": {"branch": "main", "path": "/"}}
     
-    time.sleep(6)  
+    time.sleep(5)  
     
     for _ in range(3):
-        response = requests.post(url, json=data, headers=headers, auth=(username, token))
-        if response.status_code in [201, 409]:
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code in: 
             return f"https://{username}.github.io/{repo_name}/"
         time.sleep(4)
         
     return f"https://{username}.github.io/{repo_name}/"
 
 def execute_automation_cycle(prompt, repo_name):
-    """Orchestrates purely cloud-native site creation loops without hard drive requirements."""
+    """Orchestrates cloud-native site creation loops cleanly."""
     create_github_repo(repo_name)
     html_payload = route_prompt_to_template(prompt)
     upload_index_html(repo_name, html_payload)
